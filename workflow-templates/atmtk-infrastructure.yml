@@ -1,0 +1,102 @@
+name: Apply Infrastructure via Terraform and Ansible
+
+on:
+  workflow_call:
+    secrets:
+      DOCKERHUB_APP_NAME:
+         required: true
+      DO_IMAGE:
+        required: true
+      S3_STORAGE_DEVOPS_BUCKET:
+        required: true
+      S3_STORAGE_DEVOPS_TF_KEY:
+        required: true
+      S3_STORAGE_DEVOPS_ACCESS_KEY:
+        required: true
+      S3_STORAGE_DEVOPS_SECRET_KEY:
+        required: true
+      S3_BUCKET:
+        required: true
+      DO_TOKEN:
+        required: true
+      SSH_PUB_KEY:
+        required: true
+      SSH_DEVOPS_KEY_PUBLIC:
+        required: true
+      SSH_DEVOPS_KEY_PRIVATE:
+        required: true
+  workflow_dispatch:
+
+jobs:
+   terraform_ansible:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v1
+        with:
+          terraform_version: 1.1.9
+      - name: Add Terraform Backend for S3
+        run: |
+          cat << EOF > devops/tf/backend
+          skip_credentials_validation = true
+          skip_region_validation = true
+          bucket="${{ secrets.S3_STORAGE_DEVOPS_BUCKET }}"
+          key="${{ secrets.S3_STORAGE_DEVOPS_TF_KEY }}"
+          region="us-southeast-1"
+          endpoint="us-southeast-1.linodeobjects.com"
+          access_key="${{ secrets.S3_STORAGE_DEVOPS_ACCESS_KEY }}"
+          secret_key="${{ secrets.S3_STORAGE_DEVOPS_SECRET_KEY }}"
+          EOF
+      - name: Add Terraform TFVars
+        run: |
+          cat << EOF > devops/tf/terraform.tfvars
+          do_token="${{ secrets.GITHUB_TOKEN }}"
+          authorized_key="${{ secrets.SSH_DEVOPS_KEY_PUBLIC }}"
+          do_image="${{ secrets.LINODE_IMAGE }}"
+          EOF
+      - name: Terraform Init
+        run: terraform -chdir=./devops/tf init -backend-config=backend
+      - name: Terraform Validate 
+        run: terraform -chdir=./devops/tf validate -no-color
+      - name: Terraform Apply Changes 
+        run: terraform -chdir=./devops/tf apply -auto-approve
+      
+      - name: Add SSH Keys
+        run: |
+          cat << EOF > devops/ansible/devops-key
+          ${{ secrets.SSH_DEVOPS_KEY_PRIVATE }}
+          EOF
+      - name: Update devops private key permissions
+        run: |
+          chmod 400 devops/ansible/devops-key
+      - name: Install Ansible
+        run: |
+          pip install ansible
+      
+      - name: Adding or Override Ansible Config File
+        run: |
+          cat << EOF > devops/ansible/ansible.cfg
+          [defaults]
+          ansible_python_interpreter='/usr/bin/python3'
+          deprecation_warnings=False
+          inventory=./inventory.ini
+          remote_user="root"
+          host_key_checking=False
+          private_key_file = ./devops-key
+          retries=2
+          EOF
+      - name: Adding Ansible Variables
+        run: |
+          mkdir -p devops/ansible/vars/
+          cat << EOF > devops/ansible/vars/main.yaml
+          ---
+          docker_appname: "${{ secrets.DOCKERHUB_APP_NAME }}"
+          docker_token: "${{ secrets.DOCKERHUB_TOKEN }}"
+          docker_username: "${{ secrets.DOCKERHUB_USERNAME }}"
+          docker_registry: "ghcr.io"
+          EOF
+      - name: Run main playbook
+        run: |
+          ANSIBLE_CONFIG=devops/ansible/ansible.cfg ansible-playbook devops/ansible/main.yaml
