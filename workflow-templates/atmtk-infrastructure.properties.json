@@ -1,0 +1,13 @@
+{
+    "name": "Oceanware Organization Django Ci",
+    "description": "Oceanware Organization django psql CI starter workflow.",
+    "categories": [
+        "infrastructure"
+    ],
+    "filePatterns": [
+        "package.json$",
+        "^Dockerfile",
+        ".*\\.py$",
+        ".*\\.js$",
+    ]
+}
