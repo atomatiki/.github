@@ -1,1 +1,1 @@
-# .gothub
+# .github / workflow-templates
