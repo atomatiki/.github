@@ -2,7 +2,7 @@
     "name": "atomatiki Infrastructure",
     "description": "Atomatiki Infrastructure starter workflow.",
     "categories": [
-        "infrastructure"
+        "configuration"
     ],
     "filePatterns": [
         "package.json$",
