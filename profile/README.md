@@ -1,4 +1,4 @@
 ## atomatiki HQ
 <i>
-Usefull Cloud and IT automation resources.
+Usefull Cloud automation resources.
 <i/>
