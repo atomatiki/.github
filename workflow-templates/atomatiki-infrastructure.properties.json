@@ -2,7 +2,10 @@
     "name": "atomatiki Infrastructure",
     "description": "Atomatiki Infrastructure starter workflow.",
     "categories": [
-        "configuration"
+        "yaml",
+        "python",
+        "go",
+        "js"
     ],
     "filePatterns": [
         "package.json$",
