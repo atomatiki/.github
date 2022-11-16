@@ -10,9 +10,9 @@
     "filePatterns": [
         "package.json$",
         "^Dockerfile",
-        ".*\\.py$",
-        ".*\\.js$",
-        ".*\\.yml$",
-        ".*\\.yaml$",
+        "*\\.py$",
+        "*\\.js$",
+        "*\\.yml$",
+        "*\\.yaml$",
     ]
 }
