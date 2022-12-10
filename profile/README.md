@@ -2,19 +2,22 @@
 
 # atomatiki HQ
 
-Atomatiki provides smart IT automation solutions backed up by modern tools (both opensource and custom built tools) and software utilizing AI and Machine learning algorithms to optimize performance. We love automation since it saves time and avoids repetitive errors. We hope our solutions help the world of software become better.
-
-## Tools we work with.
-  - Ansible
-  - Terraform
+At Atomatiki Technologies, we build, deploy, mantain, configure, secure, scale and troubleshoot cloud native software systems. We intergrate all our work with automation mechanisms to improve speed, acuracy and consistance of our systems. We work on both opensource and proprietry software.
   
 ## Technologies we work with.
   - Docker
   - Kubernetes
+  
+## Clouds we work with.
+  - Digital Ocean
+  - AWS
+  - GCP
+  - AZURE
   
 ## Open sourced projects we use.
   - Traefik proxy server
   - Portainer
   - Watchtower
 
+### You are welcome to work with us or hire us. !!
 </samp>
